@@ -1,0 +1,59 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build:
+    
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v1
+    - name: Docker Build and Push
+      run: |
+        SHA=${GITHUB_SHA:0:7}
+        APP=${GITHUB_REPOSITORY#*/}
+        DOCKER_URL=${{ secrets.REGISTRY_URL }}/${{ secrets.REGISTRY_USERNAME }}/${APP}/${APP}:${SHA}
+        docker login ${{ secrets.REGISTRY_URL }} -u ${{ secrets.REGISTRY_USERNAME }} -p ${{ secrets.REGISTRY_PASSWORD }}
+        docker build . --no-cache -f Dockerfile -t ${DOCKER_URL}
+        docker push ${DOCKER_URL}
+
+  deploy:
+
+    needs: build
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v1
+    - name: Set context
+      uses: azure/k8s-actions/k8s-set-context@master
+      with:
+        kubeconfig: ${{ secrets.KUBE_CONFIG }}
+    - name: sed
+      run: |
+        SHA=${GITHUB_SHA:0:7}
+        APP=${GITHUB_REPOSITORY#*/}
+        DOCKER_URL=${{ secrets.REGISTRY_URL }}/${{ secrets.REGISTRY_USERNAME }}/${APP}/${APP}:${SHA}
+        sed -i "s,IMG,${DOCKER_URL},g" deploy.yaml
+        cat ./deploy.yaml
+    - name: Deploy to K8S
+      run: |
+        kubectl apply -f deploy.yaml
+    - name: Check
+      run: |
+        app=${GITHUB_REPOSITORY#*/}
+        while true; do
+          ip=$(kubectl get svc -n default kubeflow-web-svc -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+          if [ -z "$ip" ]
+          then
+            echo "Waiting to get EXTERNAL-IP"
+          else
+            echo $ip
+            break
+          fi
+          sleep 10
+        done
+        curl $ip
+    
