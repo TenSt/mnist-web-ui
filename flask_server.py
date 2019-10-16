@@ -29,7 +29,7 @@ app = Flask(__name__)
 @app.route("/")
 def main():
   # get url parameters for HTML template
-  name_arg = request.args.get('name', 'mnist')
+  name_arg = request.args.get('name', 'mnist-service')
   addr_arg = request.args.get('addr', 'mnist-service')
   port_arg = request.args.get('port', '9000')
   args = {"name": name_arg, "addr": addr_arg, "port": port_arg}

@@ -45,7 +45,7 @@ jobs:
       run: |
         app=${GITHUB_REPOSITORY#*/}
         while true; do
-          ip=$(kubectl get svc -n default kubeflow-web-svc -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+          ip=$(kubectl get svc web-ui -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
           if [ -z "$ip" ]
           then
             echo "Waiting to get EXTERNAL-IP"
