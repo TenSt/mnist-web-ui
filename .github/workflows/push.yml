@@ -38,6 +38,15 @@ jobs:
         DOCKER_URL=${{ secrets.REGISTRY_URL }}/${{ secrets.REGISTRY_USERNAME }}/${APP}/${APP}:${SHA}
         sed -i "s,IMG,${DOCKER_URL},g" deploy.yaml
         cat ./deploy.yaml
+    - name: Set imagePullSecret
+      uses: azure/k8s-create-secret@v1
+      with:
+        namespace: 'default'
+        container-registry-url: ${{ secrets.REGISTRY_URL }}
+        container-registry-username: ${{ secrets.REGISTRY_USERNAME }}
+        container-registry-password: ${{ secrets.REGISTRY_PASSWORD }}
+        secret-name: 'docker-registry-secret'
+      id: create-secret
     - name: Deploy to K8S
       run: |
         kubectl apply -f deploy.yaml
