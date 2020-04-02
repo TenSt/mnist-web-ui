@@ -17,12 +17,12 @@ spec:
       labels:
         app: web-ui
     spec:
+      imagePullSecrets:
+      - name: docker-registry-secret
       containers:
       - image: IMG
         imagePullPolicy: IfNotPresent
         name: web-ui
-        imagePullSecrets:
-        - name: docker-registry-secret
         ports:
         - containerPort: 5000
           protocol: TCP
