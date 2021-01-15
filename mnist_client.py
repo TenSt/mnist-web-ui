@@ -29,6 +29,7 @@ from tensorflow_serving.apis import prediction_service_pb2
 
 from PIL import Image
 
+print(tf.__version__)
 
 def get_prediction(image, server_host='127.0.0.1', server_port=9000,
                    server_name="server", timeout=10.0):
