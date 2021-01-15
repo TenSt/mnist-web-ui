@@ -28,7 +28,7 @@ RUN pip --no-cache-dir install \
         ipykernel \
         numpy \
         tensorflow==1.14.0 \
-        tensorflow-serving-api \
+        tensorflow-serving-api==1.14.0 \
         flask \
         && \
     python -m ipykernel.kernelspec
