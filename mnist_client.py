@@ -49,7 +49,7 @@ def get_prediction(image, server_host='127.0.0.1', server_port=9000,
   print("connecting to:%s:%i" % (server_host, server_port))
   # initialize to server connection
   channel = implementations.insecure_channel(server_host, server_port)
-  stub = prediction_service_pb2.PredictionServiceStub(channel)
+  stub = prediction_service_pb2.beta_create_PredictionService_stub(channel)
 
   # build request
   request = predict_pb2.PredictRequest()
