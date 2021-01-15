@@ -28,9 +28,11 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v1
     - name: Set context
-      uses: azure/k8s-actions/k8s-set-context@master
+      uses: azure/k8s-set-context@v1
       with:
+        method: kubeconfig
         kubeconfig: ${{ secrets.KUBE_CONFIG }}
+      id: setcontext
     - name: sed
       run: |
         SHA=${GITHUB_SHA:0:7}
